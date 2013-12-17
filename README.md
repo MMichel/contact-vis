@@ -8,10 +8,10 @@ Python package for simple protein residue-residue contact map plotting.
 Usage
 =====
 
-plot_contact_map.py [-h] [-o OUTFILE] [-f FACTOR] [--c2 C2]
+``plot_contact_map.py [-h] [-o OUTFILE] [-f FACTOR] [--c2 C2]
                     [--psipred_horiz PSIPRED_HORIZ] [--pdb PDB]
                     [--heavy] [--chain CHAIN]
-                    fasta_file contact_file
+                    fasta_file contact_file``
 
 
 To reproduce the different examples in the ``test`` folder run the following commands (when you are in the ``test`` folder):
