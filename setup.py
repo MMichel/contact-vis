@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='ContactVis',
-    version='0.1.0',
+    version='0.1.1',
     author='M. Michel',
     author_email='guy.inkognito42@gmail.com',
     packages=['contactvis', 'contactvis.parsing', 'contactvis.test'],
