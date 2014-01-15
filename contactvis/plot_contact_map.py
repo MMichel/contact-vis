@@ -218,7 +218,7 @@ def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_filenam
    
         print '%s\t%s' % (acc, PPVs[-1])
       
-        ax.scatter(ref_contacts_x, ref_contacts_y, marker='o', c='#CCCCCC', lw=0)
+        ax.scatter(ref_contacts_x, ref_contacts_y, marker='o', c='#CCCCCC', lw=0, edgecolor='#CCCCCC')
 
 
     ### plot predicted contacts from second contact map if given
