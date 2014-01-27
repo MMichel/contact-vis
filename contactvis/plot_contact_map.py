@@ -122,7 +122,7 @@ def get_tp_colors(contacts_x, contacts_y, ref_contact_map, atom_seq_ali):
     return tp_colors
  
 
-def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_filename='', pdb_filename='', is_heavy=False, chain='', sep=',', outfilename=''):  
+def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_filename='', pdb_filename='', is_heavy=False, chain='', sep=',', sep2=',', outfilename=''):  
    
     acc = c_filename.split('.')[0]
 
@@ -223,7 +223,7 @@ def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_filenam
 
     ### plot predicted contacts from second contact map if given
     if c2_filename:
-        contacts2 = parse_contacts.parse(open(c2_filename, 'r'), sep)
+        contacts2 = parse_contacts.parse(open(c2_filename, 'r'), sep2)
         contacts2_x = []
         contacts2_y = []
         scores2 = []
@@ -309,6 +309,7 @@ if __name__ == "__main__":
 
     fasta_filename = args['fasta_file']
     c_filename = args['contact_file']
+    c2_filename = c2_filename=args['c2']
     psipred_filename = args['psipred_horiz']
 
     # guessing separator of constraint file
@@ -319,6 +320,18 @@ if __name__ == "__main__":
         sep = ' '
     else:
         sep = '\t'
-    
-    plot_map(args['fasta_file'], args['contact_file'], args['factor'], c2_filename=args['c2'], psipred_filename=args['psipred_horiz'], pdb_filename=args['pdb'], is_heavy=args['heavy'], chain=args['chain'], sep=sep, outfilename=args['outfile'])
+
+    # guessing separator of constraint file
+    sep2 = ','
+    if c2_filename:
+        line = open(c2_filename,'r').readline()
+        if len(line.split(',')) != 1:
+            sep2 = ','
+        elif len(line.split(' ')) != 1:
+            sep2 = ' '
+        else:
+            sep2 = '\t'
+
+        
+    plot_map(args['fasta_file'], args['contact_file'], args['factor'], c2_filename=args['c2'], psipred_filename=args['psipred_horiz'], pdb_filename=args['pdb'], is_heavy=args['heavy'], chain=args['chain'], sep=sep, sep2=sep2, outfilename=args['outfile'])
 
