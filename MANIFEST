@@ -12,3 +12,5 @@ contactvis/parsing/parse_contacts.py
 contactvis/parsing/parse_fasta.py
 contactvis/parsing/parse_pdb.py
 contactvis/parsing/parse_psipred.py
+contactvis/test/__init__.py
+contactvis/test/test.py
