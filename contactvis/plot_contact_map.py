@@ -122,13 +122,23 @@ def get_tp_colors(contacts_x, contacts_y, ref_contact_map, atom_seq_ali):
     return tp_colors
  
 
-def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_filename='', pdb_filename='', is_heavy=False, chain='', sep=',', sep2=',', outfilename=''):  
+def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_filename='', pdb_filename='', is_heavy=False, chain='', sep='', sep2='', outfilename=''):  
    
     acc = c_filename.split('.')[0]
 
     ### get sequence
     seq = parse_fasta.read_fasta(open(fasta_filename, 'r')).values()[0][0]
     ref_len = len(seq)
+
+    # guessing separator of constraint file
+    if sep == '':
+        line = open(c_filename,'r').readline()
+        if len(line.split(',')) != 1:
+            sep = ','
+        elif len(line.split(' ')) != 1:
+            sep = ' '
+        else:
+            sep = '\t'
 
     ### get top "factor" * "ref_len" predicted contacts
     contacts = parse_contacts.parse(open(c_filename, 'r'), sep)
@@ -223,6 +233,17 @@ def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_filenam
 
     ### plot predicted contacts from second contact map if given
     if c2_filename:
+
+        # guessing separator of constraint file
+        if sep2 == '':
+            line = open(c_filename,'r').readline()
+            if len(line.split(',')) != 1:
+                sep2 = ','
+            elif len(line.split(' ')) != 1:
+                sep2 = ' '
+            else:
+                sep2 = '\t'
+
         contacts2 = parse_contacts.parse(open(c2_filename, 'r'), sep2)
         contacts2_x = []
         contacts2_y = []
