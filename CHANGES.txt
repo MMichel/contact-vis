@@ -1,1 +1,3 @@
 v0.1, 2013-12-17 -- Initial release
+v0.4, 2014-01-29 -- Bugfix: separator now guessed within the method.
+v0.5, 2014-02-01 -- Bugfix: PDB parser get_cb_coordinates now uses CA if CB is missing in a non glycine residue
