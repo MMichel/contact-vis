@@ -2,6 +2,7 @@ ContactVis
 ==========
 
 Python package for simple protein residue-residue contact map plotting.
+[Available on PyPi](https://pypi.python.org/pypi/ContactVis).
 
 
 Usage
