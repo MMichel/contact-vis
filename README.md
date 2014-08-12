@@ -24,8 +24,7 @@ Within python:
 
 ```from contactvis import plot_contact_map```
 
-```plot_contact_map.plot_map(fasta_filename, contact_filename, factor, c2_filename='', psipred_filename='', pdb_filename='', is_heavy=False, chain='', sep=',', outfilename='')
-```
+```plot_contact_map.plot_map(fasta_filename, contact_filename, factor, c2_filename='', psipred_filename='', pdb_filename='', is_heavy=False, chain='', sep=',', outfilename='')```
 
 Terminal:
 
