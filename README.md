@@ -34,13 +34,20 @@ Terminal:
                     fasta_file contact_file```
 
 
+
 To reproduce the examples in ``test`` run the following commands:
 
+
 Simple map of the given contact file with coloring according to contact probability:
+
 ```python ../plot_contact_map.py sequence.fasta predicted.contacts -o cm_simple```
 
+
 Comparison to contacts from the native PDB structure (pairwise CB-atom distance with 8Å cutoff):
+
 ```python ../plot_contact_map.py sequence.fasta predicted.contacts -o cm_pdb.pdf --pdb native_structure.pdb```
 
+
 Compare two different predicted contact maps to each other and to a native PDB structure and include secondary structure information along the diagonal (red: helix, blue: sheet):
+
 ```python ../plot_contact_map.py sequence.fasta predicted.contacts -o cm_compare_pdb.pdf --pdb native_structure.pdb --c2 predicted.contacts2 --psipred_horiz psipred.horiz```
