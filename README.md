@@ -28,7 +28,7 @@ Within python:
 
 Terminal:
 
-```plot_contact_map.py [-h] [-i] [-o OUTFILE] [-f FACTOR] [--c2 C2]
+```plot_contact_map [-h] [-i] [-o OUTFILE] [-f FACTOR] [--c2 C2]
                     [--psipred_horiz PSIPRED_HORIZ] [--pdb PDB]
                     [--heavy] [--chain CHAIN]
                     fasta_file contact_file```
