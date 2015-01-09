@@ -73,7 +73,7 @@ def get_ppvs(contacts_x, contacts_y, ref_contact_map, atom_seq_ali, ref_len, fac
     TPs = []
     FPs = []
 
-    for num_c in range(min(len(contacts_x), ref_len * factor))[1:]:
+    for num_c in range(min(len(contacts_x), ceil(ref_len * factor)) + 1)[1:]:
         TP = 0.0
         FP = 0.0
         for i in range(num_c):
@@ -84,19 +84,24 @@ def get_ppvs(contacts_x, contacts_y, ref_contact_map, atom_seq_ali, ref_len, fac
             if atom_seq_ali[c_y] == '-':
                 continue
             if ref_contact_map[c_x, c_y] > 0:
-                TP += 1.0
+                TP += 1.0 / (ref_len*factor)
             else:
-                FP += 1.0
+                FP += 1.0 / (ref_len*factor)
 
-        if TP > 0 and FP > 0:
+        if TP > 0.0:
             PPVs.append(TP / (TP + FP))
-            TPs.append(TP / ref_len)
-            FPs.append(FP / ref_len)
+            TPs.append(TP)
+            FPs.append(FP)
+
 
     if len(PPVs) == 0:
         PPVs.append(0.0)
+    if len(TPs) == 0:
+        TPs.append(0.0)
+    if len(FPs) == 0:
+        FPs.append(0.0)
 
-    return PPVs
+    return PPVs, TPs, FPs
 
 
 def get_tp_colors(contacts_x, contacts_y, ref_contact_map, atom_seq_ali):
@@ -122,23 +127,13 @@ def get_tp_colors(contacts_x, contacts_y, ref_contact_map, atom_seq_ali):
     return tp_colors
  
 
-def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_filename='', pdb_filename='', is_heavy=False, chain='', sep='', sep2='', outfilename=''):  
+def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_horiz_fname='', psipred_vert_fname='', pdb_filename='', is_heavy=False, chain='', sep=',', outfilename=''):  
    
-    acc = c_filename.split('.')[0]
+    acc = fasta_filename.split('.')[0][:4]
 
     ### get sequence
     seq = parse_fasta.read_fasta(open(fasta_filename, 'r')).values()[0][0]
     ref_len = len(seq)
-
-    # guessing separator of constraint file
-    if sep == '':
-        line = open(c_filename,'r').readline()
-        if len(line.split(',')) != 1:
-            sep = ','
-        elif len(line.split(' ')) != 1:
-            sep = ' '
-        else:
-            sep = '\t'
 
     ### get top "factor" * "ref_len" predicted contacts
     contacts = parse_contacts.parse(open(c_filename, 'r'), sep)
@@ -172,8 +167,14 @@ def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_filenam
     ax = fig.add_subplot(111)
 
     ### plot secondary structure on the diagonal if given
-    if psipred_filename:
-        ss = parse_psipred.horizontal(open(psipred_filename, 'r'))
+    if psipred_horiz_fname or psipred_vert_fname:
+        if psipred_horiz_fname:
+            ss = parse_psipred.horizontal(open(psipred_horiz_fname, 'r'))
+        else:
+            ss = parse_psipred.vertical(open(psipred_vert_fname, 'r'))
+
+        assert len(ss) == ref_len
+ 
         for i in range(len(ss)):
             if ss[i] == 'H':
                 plt.plot(i, i, 'o', c='#8B0043', mec="#8B0043", markersize=2)
@@ -187,7 +188,7 @@ def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_filenam
         res_lst = parse_pdb.get_coordinates(open(pdb_filename, 'r'), chain)
         cb_lst = parse_pdb.get_cb_coordinates(open(pdb_filename, 'r'), chain)
         atom_seq = parse_pdb.get_atom_seq(open(pdb_filename, 'r'), chain)
-
+                
         align = pairwise2.align.globalms(atom_seq, seq, 2, -1, -0.5, -0.1)
 
         atom_seq_ali = align[-1][0]
@@ -223,28 +224,17 @@ def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_filenam
         ref_contacts_x = ref_contacts[0]
         ref_contacts_y = ref_contacts[1]
        
-        PPVs = get_ppvs(contacts_x, contacts_y, ref_contact_map, atom_seq_ali, ref_len, factor)
+        PPVs, TPs, FPs = get_ppvs(contacts_x, contacts_y, ref_contact_map, atom_seq_ali, ref_len, factor)
         tp_colors = get_tp_colors(contacts_x, contacts_y, ref_contact_map, atom_seq_ali)
    
-        print '%s\t%s' % (acc, PPVs[-1])
+        print '%s %s %s %s' % (pdb_filename, PPVs[-1], TPs[-1], FPs[-1])
       
         ax.scatter(ref_contacts_x, ref_contacts_y, marker='o', c='#CCCCCC', lw=0, edgecolor='#CCCCCC')
 
 
     ### plot predicted contacts from second contact map if given
     if c2_filename:
-
-        # guessing separator of constraint file
-        if sep2 == '':
-            line = open(c_filename,'r').readline()
-            if len(line.split(',')) != 1:
-                sep2 = ','
-            elif len(line.split(' ')) != 1:
-                sep2 = ' '
-            else:
-                sep2 = '\t'
-
-        contacts2 = parse_contacts.parse(open(c2_filename, 'r'), sep2)
+        contacts2 = parse_contacts.parse(open(c2_filename, 'r'), sep)
         contacts2_x = []
         contacts2_y = []
         scores2 = []
@@ -271,9 +261,9 @@ def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_filenam
 
         ### use TP/FP color coding if reference contacts given
         if pdb_filename:
-            PPVs2 = get_ppvs(contacts2_x, contacts2_y, ref_contact_map, atom_seq_ali, ref_len, factor)
+            PPVs2, TPs2, FPs2 = get_ppvs(contacts2_x, contacts2_y, ref_contact_map, atom_seq_ali, ref_len, factor)
             tp2_colors = get_tp_colors(contacts2_x, contacts2_y, ref_contact_map, atom_seq_ali)
-            print '%s\t%s' % (acc, PPVs2[-1])
+            print '%s %s %s %s' % (pdb_filename, PPVs2[-1], TPs2[-1], FPs2[-1])
             fig.suptitle('%s\nPPV (upper left) = %.2f | PPV (lower right) = %.2f' % (acc, PPVs[-1], PPVs2[-1]))
             sc = ax.scatter(contacts2_y[::-1], contacts2_x[::-1], marker='o', c=tp2_colors[::-1], s=6, alpha=0.75, linewidths=0.0)
             sc = ax.scatter(contacts_x[::-1], contacts_y[::-1], marker='o', c=tp_colors[::-1], s=6, alpha=0.75, linewidths=0.0)
@@ -322,6 +312,7 @@ if __name__ == "__main__":
     p.add_argument('-f', '--factor', default=2.0, type=float)
     p.add_argument('--c2', default='')
     p.add_argument('--psipred_horiz', default='')
+    p.add_argument('--psipred_vert', default='')
     p.add_argument('--pdb', default='')
     p.add_argument('--heavy', action='store_true')
     p.add_argument('--chain', default='')
@@ -330,7 +321,6 @@ if __name__ == "__main__":
 
     fasta_filename = args['fasta_file']
     c_filename = args['contact_file']
-    c2_filename = c2_filename=args['c2']
     psipred_filename = args['psipred_horiz']
 
     # guessing separator of constraint file
@@ -341,18 +331,6 @@ if __name__ == "__main__":
         sep = ' '
     else:
         sep = '\t'
-
-    # guessing separator of constraint file
-    sep2 = ','
-    if c2_filename:
-        line = open(c2_filename,'r').readline()
-        if len(line.split(',')) != 1:
-            sep2 = ','
-        elif len(line.split(' ')) != 1:
-            sep2 = ' '
-        else:
-            sep2 = '\t'
-
-        
-    plot_map(args['fasta_file'], args['contact_file'], args['factor'], c2_filename=args['c2'], psipred_filename=args['psipred_horiz'], pdb_filename=args['pdb'], is_heavy=args['heavy'], chain=args['chain'], sep=sep, sep2=sep2, outfilename=args['outfile'])
+    
+    plot_map(args['fasta_file'], args['contact_file'], args['factor'], c2_filename=args['c2'], psipred_horiz_fname=args['psipred_horiz'], psipred_vert_fname=args['psipred_vert'], pdb_filename=args['pdb'], is_heavy=args['heavy'], chain=args['chain'], sep=sep, outfilename=args['outfile'])
 
