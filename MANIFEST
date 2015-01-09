@@ -2,6 +2,7 @@
 CHANGES.txt
 README.txt
 setup.py
+bin/plot_contact_map
 contactvis/__init__.py
 contactvis/get_avg_contact_distance.py
 contactvis/get_avg_pconsc_score.py

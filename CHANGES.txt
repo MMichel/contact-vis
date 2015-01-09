@@ -1,3 +1,4 @@
-v0.1, 2013-12-17 -- Initial release
-v0.4, 2014-01-29 -- Bugfix: separator now guessed within the method.
-v0.5, 2014-02-01 -- Bugfix: PDB parser get_cb_coordinates now uses CA if CB is missing in a non glycine residue
+v0.1.0, 2013-12-17 -- Initial release
+v0.1.4, 2014-01-29 -- Bugfix: separator now guessed within the method.
+v0.1.5, 2014-02-01 -- Bugfix: PDB parser get_cb_coordinates now uses CA if CB is missing in a non glycine residue
+v0.1.6, 2015-01-09 -- Added functionality for using PSIPRED vertical file format
