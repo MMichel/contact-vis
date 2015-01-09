@@ -292,6 +292,8 @@ def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_horiz_f
             pp = PdfPages(outfilename)
             pp.savefig(fig)
             pp.close()
+        elif outfilename.endswith(('.png', '.jpg', '.jpeg')):
+            plt.savefig(outfilename)
         else:
             pp = PdfPages('%s.pdf' % outfilename)
             pp.savefig(fig)
@@ -300,7 +302,6 @@ def plot_map(fasta_filename, c_filename, factor, c2_filename='', psipred_horiz_f
         pp = PdfPages('%s_ContactMap.pdf' % c_filename)
         pp.savefig(fig)
         pp.close()
-
 
     
 if __name__ == "__main__":

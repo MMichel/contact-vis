@@ -9,9 +9,10 @@ setup(
     url='https://github.com/MMichel/contact-vis.git',
     license='LICENSE.txt',
     description='Contact map plotting for predicted protein residue-residue contacts.',
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
     install_requires=[
         "Biopython >= 1.59",
         "matplotlib >= 1.3.1",
     ],
+    scripts = ['bin/plot_contact_map']
 )

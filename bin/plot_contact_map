@@ -1,0 +1,70 @@
+#!/bin/env python
+
+import sys
+import argparse
+
+import matplotlib
+if __name__ == '__main__' and '-i' in sys.argv[1:]:
+    _INTERACTIVE = True
+    # Silence a Matplotlib warning when importing contactivs
+    import warnings
+    warnings.simplefilter('ignore', UserWarning)
+
+else:
+    matplotlib.use('Agg')
+    _INTERACTIVE = False
+
+import matplotlib.pyplot as plt
+
+from contactvis.plot_contact_map import get_min_dist
+from contactvis.plot_contact_map import get_heavy_contacts
+from contactvis.plot_contact_map import get_cb_contacts
+from contactvis.plot_contact_map import get_ppvs
+from contactvis.plot_contact_map import get_tp_colors
+from contactvis.plot_contact_map import plot_map
+   
+   
+    
+if __name__ == "__main__":
+    p = argparse.ArgumentParser(description='Plot protein residue contact maps.')
+    p.add_argument('fasta_file')#, required=True)
+    p.add_argument('contact_file')#, required=True)
+    p.add_argument('-o', '--outfile', default='')
+    p.add_argument('-f', '--factor', default=2.0, type=float)
+    p.add_argument('--c2', default='')
+    p.add_argument('--psipred_horiz', default='')
+    p.add_argument('--pdb', default='')
+    p.add_argument('--heavy', action='store_true')
+    p.add_argument('--chain', default='')
+    p.add_argument('-i', action='store_true')
+
+    args = vars(p.parse_args(sys.argv[1:]))
+
+    fasta_filename = args['fasta_file']
+    c_filename = args['contact_file']
+    c2_filename = c2_filename=args['c2']
+    psipred_filename = args['psipred_horiz']
+
+    # guessing separator of constraint file
+    line = open(c_filename,'r').readline()
+    if len(line.split(',')) != 1:
+        sep = ','
+    elif len(line.split(' ')) != 1:
+        sep = ' '
+    else:
+        sep = '\t'
+
+    # guessing separator of constraint file
+    sep2 = ','
+    if c2_filename:
+        line = open(c2_filename,'r').readline()
+        if len(line.split(',')) != 1:
+            sep2 = ','
+        elif len(line.split(' ')) != 1:
+            sep2 = ' '
+        else:
+            sep2 = '\t'
+
+    plot_map(args['fasta_file'], args['contact_file'], args['factor'], c2_filename=args['c2'], psipred_filename=args['psipred_horiz'], pdb_filename=args['pdb'], is_heavy=args['heavy'], chain=args['chain'], sep=sep, sep2=sep2, outfilename=args['outfile'])
+    if _INTERACTIVE:
+        plt.show()
